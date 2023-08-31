@@ -1,5 +1,10 @@
 const ContactDetails = require("./ContactDetails");
+const {
+    NotFound,
+    ValidationError,
+    UnauthorizeError
 
+}=require('./error')
 class Contact {
     static id = 0;
     
@@ -14,10 +19,10 @@ class Contact {
     static newContact(firstName, lastName) {
         try {
             if (typeof firstName !== "string") {
-                throw new Error("Invalid firstName");
+                throw new ValidationError("Invalid firstName");
             }
             if (typeof lastName !== "string") {
-                throw new Error("Invalid lastName");
+                throw new ValidationError("Invalid lastName");
             }
             return new Contact(firstName, lastName);
         } catch (error) {
@@ -50,7 +55,7 @@ class Contact {
     updateContact(parameter, newValue) {
         try {
             if (typeof parameter !== "string") {
-                throw new Error("Invalid parameter");
+                throw new ValidationError("Invalid parameter");
             }
             switch (parameter) {
                 case "firstName":
@@ -68,7 +73,7 @@ class Contact {
     createContactDetail(typeOfCd, valueOfCd) {
         try {
             if (this.isAdmin) {
-                throw new Error("Admin cannot create contact-details");
+                throw new UnauthorizeError("Admin cannot create contact-details");
             }
 
             let contactDetail = ContactDetails.newContactDetails(typeOfCd, valueOfCd);

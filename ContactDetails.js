@@ -1,4 +1,10 @@
 const Contact = require("./Contact");
+const {
+    NotFound,
+    ValidationError,
+    UnauthorizeError
+
+}=require('./error')
 
 class ContactDetails {
     static id = 0;
@@ -12,10 +18,10 @@ class ContactDetails {
     static newContactDetails(typeOfCd, valueOfCd) {
         try {
             if (typeof typeOfCd !== "string") {
-                throw new Error("Invalid typeOfCd");
+                throw new ValidationError("Invalid typeOfCd");
             }
             if (typeof valueOfCd !== "number") {
-                throw new Error("Invalid valueOfCd");
+                throw new ValidationError("Invalid valueOfCd");
             }
             return new ContactDetails(typeOfCd, valueOfCd);
         } catch (error) {
@@ -26,7 +32,7 @@ class ContactDetails {
     updateTypeOfContactDetail(newValue) {
         try {
             if (typeof newValue !== "string") {
-                throw new Error("Invalid value");
+                throw new ValidationError("Invalid value");
             }
             this.typeOfCd = newValue;
         } catch (error) {
@@ -37,7 +43,7 @@ class ContactDetails {
     updateValueOfContactDetail(newValue) {
         try {
             if (typeof newValue !== "string") {
-                throw new Error("Invalid value");
+                throw new ValidationError("Invalid value");
             }
             this.valueOfCd = newValue;
         } catch (error) {
@@ -48,7 +54,7 @@ class ContactDetails {
     updateContactDetails(parameter, newValue) {
         try {
             if (typeof parameter !== "string") {
-                throw new Error("Invalid parameter");
+                throw new ValidationError("Invalid parameter");
             }
             switch (parameter) {
                 case "typeOfContactDetail":

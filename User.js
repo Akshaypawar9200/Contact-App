@@ -1,4 +1,10 @@
 const Contact = require("./Contact");
+const {
+    NotFound,
+    ValidationError,
+    UnauthorizeError
+
+}=require('./error')
 
 class User {
     static #id = 0;
@@ -16,10 +22,10 @@ class User {
     static newAdmin(fname, lname) {
         try {
             if (typeof fname !== "string") {
-                throw new Error("Invalid firstName");
+                throw new ValidationError("Invalid firstName");
             }
             if (typeof lname !== "string") {
-                throw new Error("Invalid lastName");
+                throw new ValidationError("Invalid lastName");
             }
             return new User(fname, lname, true);
         } catch (error) {
@@ -30,13 +36,13 @@ class User {
     createUser(fname, lname) {
         try {
             if (!this.isAdmin) {
-                return "You are not an admin";
+                throw new UnauthorizeError("You are not an admin");
             }
             if (typeof fname !== "string") {
-                return "Invalid firstName";
+                throw new ValidationError("Invalid firstName");
             }
             if (typeof lname !== "string") {
-                return "Invalid lastName";
+                throw new ValidationError("Invalid lastName");
             }
             let newUser = new User(fname, lname, false);
             User.#allUser.push(newUser);
@@ -63,7 +69,7 @@ class User {
     #updateFirstName(newValue) {
         try {
             if (typeof newValue !== "string") {
-                throw new Error("Invalid value");
+                throw new ValidationError("Invalid value");
             }
             this.fname = newValue;
         } catch (error) {
@@ -74,7 +80,7 @@ class User {
     #updateLastName(newValue) {
         try {
             if (typeof newValue !== "string") {
-                throw new Error("Invalid value");
+                throw new ValidationError("Invalid value");
             }
             this.lname = newValue;
         } catch (error) {
@@ -85,17 +91,17 @@ class User {
     deleteUser(id) {
         try {
             if (!this.isAdmin) {
-                throw new Error("You are not an admin");
+                throw new UnauthorizeError("You are not an admin");
             }
 
             if (typeof id !== "number") {
-                throw new Error("Invalid ID");
+                throw new ValidationError("Invalid ID");
             }
 
             const userToBeDeleted = User.#findUser(id);
 
             if (userToBeDeleted === null) {
-                throw new Error("User not found");
+                throw new NotFound("User not found");
             }
 
             userToBeDeleted.isActive = false;
@@ -109,15 +115,15 @@ class User {
     updateUser(id, parameter, newValue) {
         try {
             if (!this.isAdmin) {
-                throw new Error("You are not an admin");
+                throw new UnauthorizeError("You are not an admin");
             }
             let userToBeUpdated = User.#findUser(id);
 
             if (typeof parameter !== "string") {
-                throw new Error("Invalid parameter");
+                throw new ValidationError("Invalid parameter");
             }
             if (userToBeUpdated === null) {
-                throw new Error("User not found");
+                throw new NotFound("User not found");
             }
 
             switch (parameter) {
@@ -137,10 +143,10 @@ class User {
 // create contact
     createContact(firstName, lastName) {
         try{if (this.isAdmin) {
-            throw new Error("Admin cannot create contact");
+            throw new UnauthorizeError("Admin cannot create contact");
         }
         if(!this.isActive){
-            throw new Error("user doesn't exist")
+            throw new NotFound("user doesn't exist")
         }
         let newContact = Contact.newContact(firstName, lastName);
         this.contacts.push(newContact);
@@ -166,15 +172,15 @@ class User {
 // update contact
     updateContact(id, parameter, newValue) {
         try{if (this.isAdmin) {
-            throw new Error("Admin cannot update contact");
+            throw new UnauthorizeError("Admin cannot update contact");
         }
         if(!this.isActive){
-            throw new Error("user doesn't exist")
+            throw new NotFound("user doesn't exist")
         }
 
         let contactToBeUpdated = this.#findContact(id);
         if (contactToBeUpdated === null) {
-            throw new Error("Contact not found");
+            throw new NotFound("Contact not found");
         }
         return contactToBeUpdated.updateContact(parameter, newValue);
     }catch(error){
@@ -184,17 +190,17 @@ class User {
     deleteContacts(id) {
         try {
             if (this.isAdmin) {
-                throw new Error("Admin cannot delete contact");
+                throw new UnauthorizeError("Admin cannot delete contact");
             }
 
             if (typeof id !== "number") {
-                throw new Error("Invalid ID");
+                throw new ValidationError("Invalid ID");
             }
 
             let contactToBeDeleted = this.#findContact(id);
 
             if (contactToBeDeleted === null) {
-                throw new Error("Contact not found");
+                throw new NotFound("Contact not found");
             }
 
             contactToBeDeleted.deleteContact();
@@ -206,14 +212,14 @@ class User {
     createContactDetails(typeOfCd, newValue, id) {
         try {
             if(!this.isActive){
-                throw new Error("contact doesn't exist")
+                throw new NotFound("contact doesn't exist")
             }
             if (this.isAdmin) {
-                throw new Error("Admin cannot create contact-details");
+                throw new UnauthorizeError("Admin cannot create contact-details");
             }
             let contactObj = this.#findContact(id);
             if (contactObj === null) {
-                throw new Error("Invalid ID");
+                throw new ValidationError("Invalid ID");
             }
             contactObj.createContactDetail(typeOfCd, newValue);
             return contactObj;
@@ -225,18 +231,18 @@ class User {
     updateContactDetail(id, contactDetailId, parameter, newValue) {
         try {
             if(!this.isActive){
-                throw new Error("user doesn't exist")
+                throw new NotFound("user doesn't exist")
             }
             if (this.isAdmin) {
-                throw new Error("Admin cannot update contact");
+                throw new UnauthorizeError("Admin cannot update contact");
             }
             if (typeof id !== "number") {
-                throw new Error("Invalid contact ID");
+                throw new ValidationError("Invalid contact ID");
             }
 
             let contactDetailsToBeUpdated = this.#findContact(id);
             if (contactDetailsToBeUpdated === null) {
-                throw new Error("Contact not found");
+                throw new NotFound("Contact not found");
             }
 
             return contactDetailsToBeUpdated.updateContactDetailFromContact(contactDetailId, parameter, newValue);
@@ -248,20 +254,20 @@ class User {
     deleteContactDetails(id, contactDetailId) {
         try {
             if(!this.isActive){
-                throw new Error("user doesn't exist")
+                throw new NotFound("user doesn't exist")
             }
             if (this.isAdmin) {
-                throw new Error("Admin cannot delete contact");
+                throw new UnauthorizeError("Admin cannot delete contact");
             }
 
             if (typeof id !== "number") {
-                throw new Error("Invalid ID");
+                throw new ValidationError("Invalid ID");
             }
 
             let contactDetailsToBeDeleted = this.#findContact(id);
 
             if (contactDetailsToBeDeleted === null) {
-                throw new Error("User not found");
+                throw new NotFound("User not found");
             }
 
             contactDetailsToBeDeleted.deleteContactDetailsFromContact(contactDetailId);
