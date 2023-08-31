@@ -1,11 +1,11 @@
 const Contact = require("./Contact");
 
 class User {
-    static id = 0;
-    static allUser = [];
+    static #id = 0;
+    static #allUser = [];
 
     constructor(fname, lname, isAdmin) {
-        this.id = User.id++;
+        this.id = User.#id++;
         this.fname = fname;
         this.lname = lname;
         this.isAdmin = isAdmin;
@@ -39,17 +39,17 @@ class User {
                 return "Invalid lastName";
             }
             let newUser = new User(fname, lname, false);
-            User.allUser.push(newUser);
+            User.#allUser.push(newUser);
             return newUser;
         } catch (error) {
             console.log(error);
         }
     }
 // find user
-    static findUser(id) {
-        for (let i = 0; i < User.allUser.length; i++) {
-            if (User.allUser[i].id === id) {
-                return User.allUser[i];
+    static #findUser(id) {
+        for (let i = 0; i < User.#allUser.length; i++) {
+            if (User.#allUser[i].id === id) {
+                return User.#allUser[i];
             }
         }
         return null;
@@ -57,10 +57,10 @@ class User {
 
 // alluser
     getAllUser() {
-        return User.allUser;
+        return User.#allUser;
     }
 // update firstname of user
-    updateFirstName(newValue) {
+    #updateFirstName(newValue) {
         try {
             if (typeof newValue !== "string") {
                 throw new Error("Invalid value");
@@ -71,7 +71,7 @@ class User {
         }
     }
 // update lastname of user
-    updateLastName(newValue) {
+    #updateLastName(newValue) {
         try {
             if (typeof newValue !== "string") {
                 throw new Error("Invalid value");
@@ -92,7 +92,7 @@ class User {
                 throw new Error("Invalid ID");
             }
 
-            const userToBeDeleted = User.findUser(id);
+            const userToBeDeleted = User.#findUser(id);
 
             if (userToBeDeleted === null) {
                 throw new Error("User not found");
@@ -111,7 +111,7 @@ class User {
             if (!this.isAdmin) {
                 throw new Error("You are not an admin");
             }
-            let userToBeUpdated = User.findUser(id);
+            let userToBeUpdated = User.#findUser(id);
 
             if (typeof parameter !== "string") {
                 throw new Error("Invalid parameter");
@@ -122,10 +122,10 @@ class User {
 
             switch (parameter) {
                 case "firstName":
-                    userToBeUpdated.updateFirstName(newValue);
+                    userToBeUpdated.#updateFirstName(newValue);
                     return userToBeUpdated;
                 case "lastName":
-                    userToBeUpdated.updateLastName(newValue);
+                    userToBeUpdated.#updateLastName(newValue);
                     return userToBeUpdated;
                 default:
                     return "Invalid parameter";
@@ -136,7 +136,7 @@ class User {
     }
 // create contact
     createContact(firstName, lastName) {
-        if (this.isAdmin) {
+        try{if (this.isAdmin) {
             throw new Error("Admin cannot create contact");
         }
         if(!this.isActive){
@@ -146,8 +146,12 @@ class User {
         this.contacts.push(newContact);
         return newContact;
     }
+    catch(error){
+        console.log(error.message);
+    }
+    }
 // find contact 
-    findContact(id) {
+    #findContact(id) {
         for (let i = 0; i < this.contacts.length; i++) {
             if (id === this.contacts[i].id) {
                 return this.contacts[i];
@@ -161,19 +165,21 @@ class User {
     }
 // update contact
     updateContact(id, parameter, newValue) {
-        if (this.isAdmin) {
+        try{if (this.isAdmin) {
             throw new Error("Admin cannot update contact");
         }
         if(!this.isActive){
             throw new Error("user doesn't exist")
         }
 
-        let contactToBeUpdated = this.findContact(id);
+        let contactToBeUpdated = this.#findContact(id);
         if (contactToBeUpdated === null) {
             throw new Error("Contact not found");
         }
         return contactToBeUpdated.updateContact(parameter, newValue);
-    }
+    }catch(error){
+        console.log(error.message);
+    }}
 // delete Contact
     deleteContacts(id) {
         try {
@@ -185,7 +191,7 @@ class User {
                 throw new Error("Invalid ID");
             }
 
-            let contactToBeDeleted = this.findContact(id);
+            let contactToBeDeleted = this.#findContact(id);
 
             if (contactToBeDeleted === null) {
                 throw new Error("Contact not found");
@@ -205,7 +211,7 @@ class User {
             if (this.isAdmin) {
                 throw new Error("Admin cannot create contact-details");
             }
-            let contactObj = this.findContact(id);
+            let contactObj = this.#findContact(id);
             if (contactObj === null) {
                 throw new Error("Invalid ID");
             }
@@ -228,7 +234,7 @@ class User {
                 throw new Error("Invalid contact ID");
             }
 
-            let contactDetailsToBeUpdated = this.findContact(id);
+            let contactDetailsToBeUpdated = this.#findContact(id);
             if (contactDetailsToBeUpdated === null) {
                 throw new Error("Contact not found");
             }
@@ -252,7 +258,7 @@ class User {
                 throw new Error("Invalid ID");
             }
 
-            let contactDetailsToBeDeleted = this.findContact(id);
+            let contactDetailsToBeDeleted = this.#findContact(id);
 
             if (contactDetailsToBeDeleted === null) {
                 throw new Error("User not found");

@@ -7,11 +7,11 @@ let user1 = admin.createUser("om", "rane");
 let user2 = admin.createUser("pankaj", "kashid");
 
 // update user
-admin.updateUser(1,"lastName","ap")
+// admin.updateUser(1,"lastName","ap")
 
 
 // delete user
-admin.deleteUser(1)
+// admin.deleteUser(1)
 
 
 // Alluser
@@ -27,7 +27,7 @@ user2.createContact("akash","pawar")
 user2.createContact("ayush","dhone")
 
 // delete user1 contact
-user1.deleteContacts(0)
+// user1.deleteContacts(0)
 
 // printing user1 contact
 console.log(user1.contacts);
@@ -46,6 +46,6 @@ user1.updateContactDetail(0,0,"typeOfContactDetail","friend")
 console.log(user1.contacts[0].contactDetails)
 
 //delete contact details
-user1.deleteContactDetails(0,0)
-console.log(user1.contacts[0].contactDetails)
+// user1.deleteContactDetails(0,0)
+// console.log(user1.contacts[0].contactDetails)
 
